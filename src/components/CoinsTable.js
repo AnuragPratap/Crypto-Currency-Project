@@ -19,35 +19,34 @@ import {
 } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import { numberWithCommas } from "./Banner/Carousel";
-
+import { Pagination } from "@material-ui/lab";
 
 const useStyles = makeStyles({
-    row: {
-      backgroundColor: "#16171a",
-      cursor: "pointer",
-      "&:hover": {
-        backgroundColor: "#131111",
-      },
-      fontFamily: "Montserrat",
+  row: {
+    backgroundColor: "#16171a",
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#131111",
     },
-    pagination: {
-      "& .MuiPaginationItem-root": {
-        color: "gold",
-      },
+    fontFamily: "Montserrat",
+  },
+  pagination: {
+    "& .MuiPaginationItem-root": {
+      color: "gold",
     },
-  });
+  },
+});
 
 const CoinsTable = () => {
-    const [coins, setCoins] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [search, setSearch] = useState("");
-    const [page, setPage] = useState(1);
+  const [coins, setCoins] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  
   const { currency, symbol } = CryptoState();
 
   const classes = useStyles();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const darkTheme = createTheme({
     palette: {
@@ -72,8 +71,6 @@ const CoinsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currency]);
 
-  
-
   const handleSearch = () => {
     return coins.filter(
       (coin) =>
@@ -81,11 +78,6 @@ const CoinsTable = () => {
         coin.symbol.toLowerCase().includes(search)
     );
   };
-
-  
-
- 
-
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -99,7 +91,7 @@ const CoinsTable = () => {
         <TextField
           label="Search for a Crypto Currency.."
           variant="outlined"
-          style={{ marginBottom: 20, width: "100%" }}
+          style={{ marginBottom: 20, width: "75%" }}
           onChange={(e) => setSearch(e.target.value)}
         />
         <TableContainer>
@@ -125,15 +117,17 @@ const CoinsTable = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {handleSearch().map((row) => {
-                  const profit = row.price_change_percentage_24h > 0;
-                  return (
-                    <TableRow
-                      onClick={() => navigate(`/coins/${row.id}`)}
-                      className={classes.row}
-                      key={row.name}
-                    >
-                         <TableCell
+                {handleSearch()
+                  .slice((page - 1) * 10, (page - 1) * 10 + 10)
+                  .map((row) => {
+                    const profit = row.price_change_percentage_24h > 0;
+                    return (
+                      <TableRow
+                        onClick={() => navigate(`/coins/${row.id}`)}
+                        className={classes.row}
+                        key={row.name}
+                      >
+                        <TableCell
                           component="th"
                           scope="row"
                           style={{
@@ -184,14 +178,27 @@ const CoinsTable = () => {
                           )}
                           M
                         </TableCell>
-
-                    </TableRow>
-                  );
-                })}
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           )}
         </TableContainer>
+        <Pagination
+          count={(handleSearch()?.length / 10).toFixed(0)}
+          style={{
+            padding: 20,
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+          classes={{ ul: classes.pagination }}
+          onChange={(_, value) => {
+            setPage(value);
+            window.scroll(0, 450);
+          }}
+        />
       </Container>
     </ThemeProvider>
   );
