@@ -31,7 +31,7 @@ const Banner = () => {
           <Typography variant="h2" style={{fontWeight:"bold",
         marginBottom : 15,
         fontFamily:"montserrat" }}>
-          Cryto Currency
+          Crypto Currency
         </Typography>
         <Typography variant="subtitle2"
         style={{

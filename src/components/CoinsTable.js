@@ -1,6 +1,4 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { CoinList } from "../config/api";
 import { CryptoState } from "../CryptoContext";
 import {
   Container,
@@ -38,15 +36,13 @@ const useStyles = makeStyles({
 });
 
 const CoinsTable = () => {
-  const [coins, setCoins] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const { currency, symbol } = CryptoState();
+  const { currency, symbol, coins, loading, fetchCoins } = CryptoState();
 
   const classes = useStyles();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); //used in place of useHistory
 
   const darkTheme = createTheme({
     palette: {
@@ -57,14 +53,7 @@ const CoinsTable = () => {
     },
   });
 
-  const fetchCoins = async () => {
-    setLoading(true);
-    const { data } = await axios.get(CoinList(currency));
-    console.log(data);
-
-    setCoins(data);
-    setLoading(false);
-  };
+ 
 
   useEffect(() => {
     fetchCoins();
@@ -78,6 +67,13 @@ const CoinsTable = () => {
         coin.symbol.toLowerCase().includes(search)
     );
   };
+
+
+  // if (Math.random() > 0.5) return new Error("Test Error Boundary");
+
+
+
+
 
   return (
     <ThemeProvider theme={darkTheme}>

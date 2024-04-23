@@ -16,3 +16,4 @@ export const chartDays = [
       value: 365,
     },
   ];
+  
