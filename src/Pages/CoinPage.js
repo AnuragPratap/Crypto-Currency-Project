@@ -10,6 +10,7 @@ import ReactHtmlParser from "react-html-parser";
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
+
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -33,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     marginBottom: 20,
     fontFamily: "Montserrat",
+  },
+  btn:{
+     display: "flex",
+     flexDirection:"column",
+     gap: 10,
   },
   description: {
     width: "100%",
@@ -126,9 +132,63 @@ const CoinPage = () => {
     fetchCoin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const buynow = async (event) => {
+    const amount = 500;
+    const currency = 'INR';
+    const receiptId = '123456'; 
+    const response = await fetch('http://localhost:5000/order ', {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount,
+        currency,
+        receipt: receiptId,
+      }),
+    });
+    const order = await response.json();
+    console.log(order);
+
+    var options = {
+      key: "rzp_test_fqN8RZbi643u3o", 
+      amount, 
+     currency ,
+      name: "Shriya's Crypto Store", 
+      description: "Please Pay the amount to buy the coin",
+      image: "https://example.com/your_logo",
+      order_id: order.id, 
+      handler: async function (response) {
+        alert("Payment Successfull");
+      },
+       
+      prefill: { 
+          "name": "Shriya Gautam", 
+          "email": "shriya.gautam@gmail.com",
+          "contact": "9000090000"  
+      },
+      notes: {
+          "address": "Razorpay Corporate Office"
+      },
+      theme: {
+          "color": "#3399cc"
+      },
+    }
 
 
-
+    var rzp1 = new window.Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+      alert(response.error.code);
+      alert(response.error.description);
+      alert(response.error.source);
+      alert(response.error.step);
+      alert(response.error.reason);
+      alert(response.error.metadata.order_id);
+      alert(response.error.metadata.payment_id);
+});
+    rzp1.open();
+    event.preventDefault(); //so that our page will not refresh
+  };
 
   const classes = useStyles();
 
@@ -202,6 +262,7 @@ const CoinPage = () => {
             M
           </Typography>
         </span>
+        <div className={classes.btn}>
         {user && (
             <Button
               variant="outlined"
@@ -215,6 +276,18 @@ const CoinPage = () => {
               {inWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
             </Button>
           )}
+          <Button
+          variant="outlined"
+          style={{
+            width: "100%",
+            height: 40,
+            backgroundColor: "#4BB3F2",
+          }}
+          onClick={buynow}
+          >
+              Buy Now
+            </Button>
+            </div>
       </div>
     </div>
     <CoinInfo coin={coin} />

@@ -94,7 +94,22 @@ const CoinInfo = ({ coin }) => {
               options={{
                 elements: {
                   point: {
-                    radius: 1,
+                    radius: 2,
+                  },
+                },
+                plugins: {
+                  tooltip: {
+                    mode: 'nearest',
+                    intersect: false,
+                    callbacks: {
+                      label: (context) => {
+                        const { label, parsed } = context;
+                        const date = new Date(label);
+                        const formattedDate = date.toLocaleString();
+                        const price = parsed.y;
+                        return `Date: ${formattedDate}, Price: ${price} ${currency}`;
+                      },
+                    },
                   },
                 },
               }}
